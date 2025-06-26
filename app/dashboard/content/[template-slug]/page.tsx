@@ -10,6 +10,7 @@ import { ArrowLeft, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { db } from '@/utils/db';
 import { AIOutput } from '@/utils/schema';
+import { eq } from 'drizzle-orm';
 import moment from 'moment';
 import { useUser } from '@clerk/nextjs';
 
@@ -35,9 +36,6 @@ const CreateNewContent = () => {
                 const email = user?.primaryEmailAddress?.emailAddress;
                 if (!email) return;
 
-                // Fix: Use eq from drizzle-orm for where clause
-                // .where(eq(AIOutput.createdBy, email))
-                const { eq } = await import('drizzle-orm');
                 const result = await db.select()
                     .from(AIOutput)
                     .where(eq(AIOutput.createdBy, email));
@@ -79,10 +77,11 @@ const CreateNewContent = () => {
             setAiOutput(output);
 
             const email = user?.primaryEmailAddress?.emailAddress || 'unknown';
+            const templateSlug = Array.isArray(slug) ? slug[0] : slug;
 
             await db.insert(AIOutput).values({
                 formData: JSON.stringify(formData),
-                templateSlug: slug,
+                templateSlug: templateSlug,
                 aiResponse: output,
                 createdBy: email,
                 createdAt: moment().format('YYYY-MM-DD HH:mm:ss'),
@@ -151,7 +150,6 @@ const CreateNewContent = () => {
                                 selectedTemplate={selectedTemplate}
                                 userFormInput={handleGenerate}
                                 loading={loading}
-                                totalChars={totalChars}
                             />
                         </div>
                     </div>

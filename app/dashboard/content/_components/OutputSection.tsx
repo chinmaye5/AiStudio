@@ -42,8 +42,8 @@ const OutputSection = ({ aiOutput }: Props) => {
     const config = {
         namespace: 'OutputEditor',
         theme: {},
-        editable: true, // <-- Allow editing
-        onError(error: any) {
+        editable: true,
+        onError(error: unknown) {
             console.error('Lexical error:', error);
         },
     };
@@ -65,7 +65,8 @@ const OutputSection = ({ aiOutput }: Props) => {
     };
 
     const handleExportHtml = () => {
-        const blob = new Blob([html], { type: 'text/html' });
+        // Use the raw value (your HTML code), not the rendered HTML
+        const blob = new Blob([value], { type: 'text/html' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
